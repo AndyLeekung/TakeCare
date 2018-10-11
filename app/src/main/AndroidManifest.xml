@@ -24,6 +24,11 @@
         <activity
             android:name=".TodaysTasksActivity"
             android:label="@string/todays_tasks"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".GroupActivity"
+            android:label="@string/title_activity_group"
             android:theme="@style/AppTheme"
             android:parentActivityName=".MainActivity"/>
     </application>

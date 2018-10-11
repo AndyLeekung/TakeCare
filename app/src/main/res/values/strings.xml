@@ -139,4 +139,5 @@
         <item>@string/sort_by_price</item>
     </string-array>
     <string name="title_activity_todays_tasks">TodaysTasksActivity</string>
+    <string name="title_activity_group">GroupActivity</string>
 </resources>

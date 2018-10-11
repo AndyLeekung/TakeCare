@@ -40,6 +40,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.WriteBatch;
 
+import java.security.acl.Group;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -173,6 +174,8 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.btn_groups)
     public void onGroupsClicked() {
         // TODO
+        Intent intent = new Intent(this, GroupActivity.class);
+        startActivity(intent);
     }
 
     private boolean shouldStartSignIn() {
