@@ -160,6 +160,8 @@ public class MainActivity extends AppCompatActivity {
     public void onTodaysTasksClicked() {
         // TODO
         Log.d(TAG, "todays tasks clicked");
+        Intent intent = new Intent(this, TodaysTasksActivity.class);
+        startActivity(intent);
     }
 
     @OnClick(R.id.btn_subscribed_tasks)
