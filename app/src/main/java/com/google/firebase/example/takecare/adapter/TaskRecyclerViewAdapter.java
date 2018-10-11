@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.firebase.example.takecare.R;
-import com.google.firebase.example.takecare.TaskFragment.OnListFragmentInteractionListener;
+import com.google.firebase.example.takecare.TaskListFragment.OnListFragmentInteractionListener;
 import com.google.firebase.example.takecare.dummy.DummyContent.DummyItem;
 
 import java.util.List;
@@ -30,7 +30,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_task, parent, false);
+                .inflate(R.layout.fragment_task_list_item, parent, false);
         return new ViewHolder(view);
     }
 

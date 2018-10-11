@@ -1,15 +1,11 @@
 package com.google.firebase.example.takecare;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.google.firebase.example.takecare.dummy.DummyContent;
 
@@ -17,12 +13,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class TodaysTasksActivity extends AppCompatActivity
-        implements TaskFragment.OnListFragmentInteractionListener {
+        implements TaskListFragment.OnListFragmentInteractionListener {
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    TaskFragment mTaskFragment;
+    TaskListFragment mTaskListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +30,7 @@ public class TodaysTasksActivity extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        mTaskFragment = (TaskFragment) fragmentManager.findFragmentById(R.id.todays_tasks_fragment);
+        mTaskListFragment = (TaskListFragment) fragmentManager.findFragmentById(R.id.todays_tasks_fragment);
     }
 
     @Override

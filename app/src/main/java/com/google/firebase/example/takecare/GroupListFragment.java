@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.firebase.example.takecare.adapter.TaskRecyclerViewAdapter;
+import com.google.firebase.example.takecare.adapter.GroupRecyclerViewAdapter;
 import com.google.firebase.example.takecare.dummy.DummyContent;
 import com.google.firebase.example.takecare.dummy.DummyContent.DummyItem;
 
@@ -20,7 +20,7 @@ import com.google.firebase.example.takecare.dummy.DummyContent.DummyItem;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class TaskFragment extends Fragment {
+public class GroupListFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -32,13 +32,13 @@ public class TaskFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public TaskFragment() {
+    public GroupListFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static TaskFragment newInstance(int columnCount) {
-        TaskFragment fragment = new TaskFragment();
+    public static GroupListFragment newInstance(int columnCount) {
+        GroupListFragment fragment = new GroupListFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -57,7 +57,7 @@ public class TaskFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_task_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_group_list, container, false);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -68,7 +68,7 @@ public class TaskFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new TaskRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setAdapter(new GroupRecyclerViewAdapter(DummyContent.ITEMS, mListener));
         }
         return view;
     }

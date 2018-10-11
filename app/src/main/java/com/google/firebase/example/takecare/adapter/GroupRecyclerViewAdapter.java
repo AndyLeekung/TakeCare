@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.firebase.example.takecare.GroupFragment.OnListFragmentInteractionListener;
+import com.google.firebase.example.takecare.GroupListFragment.OnListFragmentInteractionListener;
 import com.google.firebase.example.takecare.R;
 import com.google.firebase.example.takecare.dummy.DummyContent.DummyItem;
 
@@ -30,7 +30,7 @@ public class GroupRecyclerViewAdapter extends RecyclerView.Adapter<GroupRecycler
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_group, parent, false);
+                .inflate(R.layout.fragment_group_list_item, parent, false);
         return new ViewHolder(view);
     }
 

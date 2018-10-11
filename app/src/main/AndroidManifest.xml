@@ -27,7 +27,7 @@
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".GroupActivity"
+            android:name=".GroupListActivity"
             android:label="@string/title_activity_group"
             android:theme="@style/AppTheme"
             android:parentActivityName=".MainActivity"/>
