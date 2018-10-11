@@ -1,5 +1,10 @@
 <resources>
-    <string name="app_name">Friendly Eats</string>
+    <string name="app_name">TakeCare</string>
+
+    <string name="todays_tasks">Today\'s Tasks</string>
+    <string name="subscribed_tasks">Subscribed Tasks</string>
+    <string name="groups">Groups</string>
+    <!-- Strings from example app below -->
 
     <string name="value_any_category">All food</string>
     <string name="value_any_city">Anywhere</string>
