@@ -51,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore mFirestore;
     private Query mQuery;
 
-    private FilterDialogFragment mFilterDialog;
-    private RestaurantAdapter mAdapter;
+//    private FilterDialogFragment mFilterDialog;
+//    private RestaurantAdapter mAdapter;
 
     private MainActivityViewModel mViewModel;
 
@@ -85,17 +85,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Start listening for Firestore updates
-        if (mAdapter != null) {
-            mAdapter.startListening();
-        }
+//        if (mAdapter != null) {
+//            mAdapter.startListening();
+//        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (mAdapter != null) {
-            mAdapter.stopListening();
-        }
+//        if (mAdapter != null) {
+//            mAdapter.stopListening();
+//        }
     }
 
     @Override
