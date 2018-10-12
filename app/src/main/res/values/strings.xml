@@ -140,4 +140,5 @@
     </string-array>
     <string name="title_activity_todays_tasks">TodaysTasksActivity</string>
     <string name="title_activity_group">GroupActivity</string>
+    <string name="title_activity_group_detail">GroupDetailActivity</string>
 </resources>

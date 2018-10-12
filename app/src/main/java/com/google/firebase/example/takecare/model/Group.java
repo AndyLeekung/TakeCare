@@ -9,7 +9,6 @@ public class Group {
 
     // Using email for now for simplicity
     private List<String> members;
-    private List<Task> tasks;
     private String name;
 
     public Group() {}
@@ -17,14 +16,12 @@ public class Group {
     public Group(FirebaseUser creator) {
         this.name = creator.getDisplayName() + "'s group";
         this.members = new ArrayList<>();
-        this.tasks = new ArrayList<>();
         this.members.add(creator.getEmail());
     }
 
     public Group(FirebaseUser creator, String name) {
         this.name = name;
         this.members = new ArrayList<>();
-        this.tasks = new ArrayList<>();
         this.members.add(creator.getEmail());
     }
 
@@ -34,14 +31,6 @@ public class Group {
 
     public void setMembers(List<String> members) {
         this.members = members;
-    }
-
-    public List<Task> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
     }
 
     public String getName() {

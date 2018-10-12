@@ -1,5 +1,6 @@
 package com.google.firebase.example.takecare;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -117,5 +118,9 @@ public class GroupListActivity extends AppCompatActivity
         // TODO go to group activity
         String groupId = group.getId();
         Log.d(TAG, "Group ID: " + groupId + " clicked");
+        Intent intent = new Intent(this, GroupDetailActivity.class);
+        intent.putExtra(GroupDetailActivity.GROUP_ID_KEY, groupId);
+
+        startActivity(intent);
     }
 }
