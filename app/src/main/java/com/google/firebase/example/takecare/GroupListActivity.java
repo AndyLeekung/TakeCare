@@ -19,12 +19,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.example.takecare.dummy.DummyContent;
 import com.google.firebase.example.takecare.model.Group;
+import com.google.firebase.example.takecare.model.User;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.firestore.WriteBatch;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -99,7 +104,8 @@ public class GroupListActivity extends AppCompatActivity
         }
     }
 
-    private Task<Void> addGroup(final CollectionReference groupColRef, final Group group) {
+    private Task<Void> addGroup(final CollectionReference groupColRef,
+                                final Group group) {
         // Create reference for new Group, for use inside the transaction
         final DocumentReference groupRef = groupColRef.document();
 

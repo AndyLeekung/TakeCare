@@ -7,9 +7,8 @@ import java.util.List;
 
 public class Group {
 
-    // Using email for now for simplicity
-    private List<String> members;
     private String name;
+    private List<String> members;
 
     public Group() {}
 
@@ -20,17 +19,8 @@ public class Group {
     }
 
     public Group(FirebaseUser creator, String name) {
+        this(creator);
         this.name = name;
-        this.members = new ArrayList<>();
-        this.members.add(creator.getEmail());
-    }
-
-    public List<String> getMembers() {
-        return members;
-    }
-
-    public void setMembers(List<String> members) {
-        this.members = members;
     }
 
     public String getName() {
@@ -39,5 +29,13 @@ public class Group {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<String> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<String> members) {
+        this.members = members;
     }
 }

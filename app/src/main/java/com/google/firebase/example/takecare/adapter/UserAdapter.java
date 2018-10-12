@@ -7,41 +7,45 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.firebase.example.takecare.R;
-import com.google.firebase.example.takecare.TaskListFragment.OnTaskSelectedListener;
+import com.google.firebase.example.takecare.TaskListFragment;
+import com.google.firebase.example.takecare.UserListFragment;
+import com.google.firebase.example.takecare.UserListFragment.OnUserSelectedListener;
 import com.google.firebase.example.takecare.dummy.DummyContent.DummyItem;
-import com.google.firebase.example.takecare.model.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnTaskSelectedListener}.
+ * {@link RecyclerView.Adapter} that can display a User and makes a call to the
+ * specified {@link OnUserSelectedListener}.
  * TODO: Replace the implementation with code for your data type.
  */
+public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
-// TODO change to FirestoreAdapter
-public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
+    private final OnUserSelectedListener mListener;
+    private final List<String> mValues;
 
-    private final List<Task> mValues;
-    private final OnTaskSelectedListener mListener;
-
-    public TaskAdapter(List<Task> items, OnTaskSelectedListener listener) {
-        mValues = items;
+    public UserAdapter(List<String> emails, UserListFragment.OnUserSelectedListener listener) {
+        mValues = emails;
         mListener = listener;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public UserAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_task_list_item, parent, false);
-        return new ViewHolder(view);
+        return new UserAdapter.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final UserAdapter.ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
 //        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).getText());
+        holder.mContentView.setText(mValues.get(position));
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,7 +53,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onTaskClicked(holder.mItem);
+                    mListener.onUserSelected(holder.mItem);
                 }
             }
         });
@@ -64,7 +68,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public Task mItem;
+        public String mItem;
 
         public ViewHolder(View view) {
             super(view);

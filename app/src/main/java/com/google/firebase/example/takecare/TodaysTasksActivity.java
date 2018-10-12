@@ -8,12 +8,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.google.firebase.example.takecare.dummy.DummyContent;
+import com.google.firebase.example.takecare.model.Task;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class TodaysTasksActivity extends AppCompatActivity
-        implements TaskListFragment.OnListFragmentInteractionListener {
+        implements TaskListFragment.OnTaskSelectedListener {
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -48,7 +49,7 @@ public class TodaysTasksActivity extends AppCompatActivity
 
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+    public void onTaskClicked(Task item) {
         // TODO
     }
 }

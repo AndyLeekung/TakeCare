@@ -2,16 +2,17 @@ package com.google.firebase.example.takecare;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.FrameLayout;
 
 import com.google.firebase.example.takecare.model.Group;
-import com.google.firebase.example.takecare.model.Restaurant;
+import com.google.firebase.example.takecare.model.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -24,7 +25,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class GroupDetailActivity extends AppCompatActivity
-        implements EventListener<DocumentSnapshot> {
+        implements EventListener<DocumentSnapshot>,
+        UserListFragment.OnUserSelectedListener,
+        TaskListFragment.OnTaskSelectedListener {
 
     private static final String TAG = "GroupDetailActivity";
 
@@ -35,6 +38,9 @@ public class GroupDetailActivity extends AppCompatActivity
 
     @BindView(R.id.fab_add_task)
     FloatingActionButton mFabAddTask;
+
+    @BindView(R.id.user_fragment_container)
+    FrameLayout userListLayout;
 
     private FirebaseFirestore mFirestore;
     private DocumentReference mGroupRef;
@@ -59,6 +65,12 @@ public class GroupDetailActivity extends AppCompatActivity
 
         // Get reference to the restaurant
         mGroupRef = mFirestore.collection("groups").document(groupId);
+
+        // put the user list in
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.add(userListLayout.getId(), UserListFragment.newInstance(groupId));
+        ft.commit();
     }
 
     @Override
@@ -89,6 +101,18 @@ public class GroupDetailActivity extends AppCompatActivity
             mGroupRegistration.remove();
             mGroupRegistration = null;
         }
+    }
+
+    @Override
+    public void onUserSelected(String email) {
+        // TODO do something when user is selected
+        Log.d(TAG, email + " selected");
+    }
+
+    @Override
+    public void onTaskClicked(Task task) {
+        // TODO do something when task is clicked
+        Log.d(TAG, "task selected");
     }
 
     /**

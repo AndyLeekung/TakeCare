@@ -13,11 +13,14 @@ import android.view.ViewGroup;
 import com.google.firebase.example.takecare.adapter.TaskAdapter;
 import com.google.firebase.example.takecare.dummy.DummyContent;
 import com.google.firebase.example.takecare.dummy.DummyContent.DummyItem;
+import com.google.firebase.example.takecare.model.Task;
+
+import java.util.ArrayList;
 
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link OnTaskSelectedListener}
  * interface.
  */
 public class TaskListFragment extends Fragment {
@@ -26,7 +29,7 @@ public class TaskListFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
-    private OnListFragmentInteractionListener mListener;
+    private OnTaskSelectedListener mListener;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -68,7 +71,7 @@ public class TaskListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new TaskAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setAdapter(new TaskAdapter(new ArrayList<Task>(), mListener));
         }
         return view;
     }
@@ -77,8 +80,8 @@ public class TaskListFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
+        if (context instanceof OnTaskSelectedListener) {
+            mListener = (OnTaskSelectedListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnGroupSelectedListener");
@@ -101,8 +104,8 @@ public class TaskListFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnListFragmentInteractionListener {
+    public interface OnTaskSelectedListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onTaskClicked(Task item);
     }
 }

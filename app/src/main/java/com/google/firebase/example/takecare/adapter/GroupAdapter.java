@@ -17,7 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link Group} and makes a call to the
  * specified {@link GroupListFragment.OnGroupSelectedListener}.
  * TODO: Replace the implementation with code for your data type.
  */

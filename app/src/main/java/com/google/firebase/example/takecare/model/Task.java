@@ -1,5 +1,6 @@
 package com.google.firebase.example.takecare.model;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Date;
@@ -11,7 +12,7 @@ public class Task {
     private FirebaseUser owner;
     private List<FirebaseUser> subscribers;
     private String text;
-    private Date deadline;
+    private Timestamp deadline;
 
     public Task() {}
 
@@ -47,11 +48,11 @@ public class Task {
         this.text = text;
     }
 
-    public Date getDeadline() {
+    public Timestamp getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(Date deadline) {
+    public void setDeadline(Timestamp deadline) {
         this.deadline = deadline;
     }
 }
