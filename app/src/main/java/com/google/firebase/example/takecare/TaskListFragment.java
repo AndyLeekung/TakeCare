@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.firebase.example.takecare.adapter.TaskRecyclerViewAdapter;
+import com.google.firebase.example.takecare.adapter.TaskAdapter;
 import com.google.firebase.example.takecare.dummy.DummyContent;
 import com.google.firebase.example.takecare.dummy.DummyContent.DummyItem;
 
@@ -68,7 +68,7 @@ public class TaskListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new TaskRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setAdapter(new TaskAdapter(DummyContent.ITEMS, mListener));
         }
         return view;
     }

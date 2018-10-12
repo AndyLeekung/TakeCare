@@ -114,6 +114,8 @@ public class GroupListActivity extends AppCompatActivity
 
     @Override
     public void onGroupSelected(DocumentSnapshot group) {
-        // TODO
+        // TODO go to group activity
+        String groupId = group.getId();
+        Log.d(TAG, "Group ID: " + groupId + " clicked");
     }
 }
