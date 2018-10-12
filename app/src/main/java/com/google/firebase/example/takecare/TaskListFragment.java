@@ -81,7 +81,7 @@ public class TaskListFragment extends Fragment {
             mListener = (OnListFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
+                    + " must implement OnGroupSelectedListener");
         }
     }
 
