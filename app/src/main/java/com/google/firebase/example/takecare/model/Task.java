@@ -1,43 +1,30 @@
 package com.google.firebase.example.takecare.model;
 
 import com.google.firebase.Timestamp;
-import com.google.firebase.auth.FirebaseUser;
-
-import java.util.Date;
-import java.util.List;
 
 public class Task {
 
-    private FirebaseUser creator;
-    private FirebaseUser owner;
-    private List<FirebaseUser> subscribers;
+    private User creator;
+    private User owner;
     private String text;
     private Timestamp deadline;
 
     public Task() {}
 
-    public FirebaseUser getCreator() {
+    public User getCreator() {
         return creator;
     }
 
-    public void setCreator(FirebaseUser creator) {
+    public void setCreator(User creator) {
         this.creator = creator;
     }
 
-    public FirebaseUser getOwner() {
+    public User getOwner() {
         return owner;
     }
 
-    public void setOwner(FirebaseUser owner) {
+    public void setOwner(User owner) {
         this.owner = owner;
-    }
-
-    public List<FirebaseUser> getSubscribers() {
-        return subscribers;
-    }
-
-    public void setSubscribers(List<FirebaseUser> subscribers) {
-        this.subscribers = subscribers;
     }
 
     public String getText() {
