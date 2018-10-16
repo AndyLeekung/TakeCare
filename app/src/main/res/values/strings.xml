@@ -143,4 +143,5 @@
     <string name="title_activity_todays_tasks">TodaysTasksActivity</string>
     <string name="title_activity_group">GroupActivity</string>
     <string name="title_activity_group_detail">GroupDetailActivity</string>
+    <string name="title_activity_create_task">CreateTaskActivity</string>
 </resources>
