@@ -41,6 +41,15 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
+        <activity
+            android:name=".CreateTaskActivity"
+            android:label="@string/title_activity_create_task"
+            android:parentActivityName=".GroupDetailActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.google.firebase.example.takecare.GroupDetailActivity" />
+        </activity>
     </application>
 
 </manifest>

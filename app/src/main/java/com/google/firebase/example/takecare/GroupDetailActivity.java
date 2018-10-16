@@ -1,5 +1,6 @@
 package com.google.firebase.example.takecare;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
@@ -45,6 +46,7 @@ public class GroupDetailActivity extends AppCompatActivity
     private FirebaseFirestore mFirestore;
     private DocumentReference mGroupRef;
     private ListenerRegistration mGroupRegistration;
+    private Group mGroupInstance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +131,7 @@ public class GroupDetailActivity extends AppCompatActivity
     }
 
     private void onGroupLoaded(Group group) {
+        mGroupInstance = group;
         mToolbar.setTitle(group.getName());
     }
 
@@ -136,6 +139,9 @@ public class GroupDetailActivity extends AppCompatActivity
     public void onAddTask() {
         // TODO Add task
         Log.d(TAG, "Add task button clicked");
+        Intent intent = new Intent(this, CreateTaskActivity.class);
+        // need to pass along the group ID for task creation
+        intent.putExtra(CreateTaskActivity.GROUP_PARCEL_KEY, mGroupInstance);
+        startActivity(intent);
     }
-
 }
