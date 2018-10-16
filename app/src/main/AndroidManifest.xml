@@ -35,7 +35,8 @@
             android:name=".GroupDetailActivity"
             android:label="@string/title_activity_group_detail"
             android:theme="@style/AppTheme"
-            android:parentActivityName=".GroupListActivity"/>
+            android:parentActivityName=".GroupListActivity"
+            android:launchMode="singleTop" />
         <service android:name=".service.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>

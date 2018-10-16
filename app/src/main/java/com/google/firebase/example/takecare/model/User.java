@@ -9,6 +9,8 @@ public class User {
     private String name;
     private String email;
 
+    public User() {}
+
     public User(FirebaseUser user) {
         this.name = user.getDisplayName();
         this.email = user.getEmail();

@@ -46,7 +46,6 @@ public class GroupListActivity extends AppCompatActivity
     @BindView(R.id.fab_add_group)
     FloatingActionButton fabAddGroup;
 
-    private GroupListFragment mGroupListFragment;
     private FirebaseFirestore mFirestore;
     private CollectionReference mGroupColRef;
 
@@ -57,9 +56,6 @@ public class GroupListActivity extends AppCompatActivity
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        mGroupListFragment = (GroupListFragment) fragmentManager.findFragmentById(R.id.todays_tasks_fragment);
 
         // Firestore
         mFirestore = FirebaseFirestore.getInstance();

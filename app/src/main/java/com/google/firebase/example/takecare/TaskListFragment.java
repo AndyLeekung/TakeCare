@@ -11,11 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.firebase.example.takecare.adapter.TaskAdapter;
-import com.google.firebase.example.takecare.dummy.DummyContent;
-import com.google.firebase.example.takecare.dummy.DummyContent.DummyItem;
 import com.google.firebase.example.takecare.model.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * A fragment representing a list of Items.
@@ -25,11 +29,23 @@ import java.util.ArrayList;
  */
 public class TaskListFragment extends Fragment {
 
+    public enum TaskListType {
+        GroupTasks, UserTasks
+    }
+
     // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
+    private static final String ARG_TASK_TYPE = "task_type";
+    private static final String ARG__ID = "id_for_task";
     // TODO: Customize parameters
-    private int mColumnCount = 1;
+    private TaskListType mTaskListType;
+    private String mDocId;
     private OnTaskSelectedListener mListener;
+
+    private FirebaseFirestore mFirestore;
+    private TaskAdapter mTaskAdapter;
+
+    @BindView(R.id.task_list)
+    RecyclerView mTaskRecycler;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -40,10 +56,11 @@ public class TaskListFragment extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static TaskListFragment newInstance(int columnCount) {
+    public static TaskListFragment newInstance(TaskListType type, String docId) {
         TaskListFragment fragment = new TaskListFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putSerializable(ARG_TASK_TYPE, type);
+        args.putString(ARG__ID, docId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -53,7 +70,8 @@ public class TaskListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            mTaskListType = (TaskListType) getArguments().getSerializable(ARG_TASK_TYPE);
+            mDocId = getArguments().getString(ARG__ID);
         }
     }
 
@@ -61,18 +79,28 @@ public class TaskListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_task_list, container, false);
+        ButterKnife.bind(this, view);
+
+        // Initialize Firestore
+        mFirestore = FirebaseFirestore.getInstance();
+        DocumentReference docRef;
+        switch (mTaskListType) {
+            case UserTasks:
+                docRef = mFirestore.collection("users").document(mDocId);
+                break;
+            case GroupTasks:
+                docRef = mFirestore.collection("groups").document(mDocId);
+                break;
+            default:
+                docRef = mFirestore.collection("groups").document(mDocId);
+        }
+
+        Query taskQuery = docRef.collection("tasks").orderBy("deadline");
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new TaskAdapter(new ArrayList<Task>(), mListener));
-        }
+        mTaskAdapter = new TaskAdapter(taskQuery, mListener);
+        mTaskRecycler.setAdapter(mTaskAdapter);
+
         return view;
     }
 
@@ -84,7 +112,7 @@ public class TaskListFragment extends Fragment {
             mListener = (OnTaskSelectedListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnGroupSelectedListener");
+                    + " must implement OnTaskSelectedListener");
         }
     }
 
@@ -92,6 +120,20 @@ public class TaskListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        mTaskAdapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        mTaskAdapter.stopListening();
     }
 
     /**

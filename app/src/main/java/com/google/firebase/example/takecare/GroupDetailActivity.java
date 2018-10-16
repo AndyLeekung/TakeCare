@@ -33,6 +33,7 @@ public class GroupDetailActivity extends AppCompatActivity
     private static final String TAG = "GroupDetailActivity";
 
     public static final String GROUP_ID_KEY = "group_id_key";
+    public static final int CREATE_TASK_REQUEST_CODE = 8001;
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -41,12 +42,16 @@ public class GroupDetailActivity extends AppCompatActivity
     FloatingActionButton mFabAddTask;
 
     @BindView(R.id.user_fragment_container)
-    FrameLayout userListLayout;
+    FrameLayout mUserListLayout;
+
+    @BindView(R.id.group_tasks_container)
+    FrameLayout mGroupTasksLayout;
 
     private FirebaseFirestore mFirestore;
     private DocumentReference mGroupRef;
     private ListenerRegistration mGroupRegistration;
     private Group mGroupInstance;
+    private String mGroupId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +66,7 @@ public class GroupDetailActivity extends AppCompatActivity
         if (groupId == null) {
             throw new IllegalArgumentException("Must pass extra " + GROUP_ID_KEY);
         }
+        mGroupId = groupId;
 
         // Initialize Firestore
         mFirestore = FirebaseFirestore.getInstance();
@@ -71,7 +77,9 @@ public class GroupDetailActivity extends AppCompatActivity
         // put the user list in
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.add(userListLayout.getId(), UserListFragment.newInstance(groupId));
+        ft.add(mUserListLayout.getId(), UserListFragment.newInstance(groupId));
+        ft.add(mGroupTasksLayout.getId(),
+                TaskListFragment.newInstance(TaskListFragment.TaskListType.GroupTasks, groupId));
         ft.commit();
     }
 
@@ -86,6 +94,17 @@ public class GroupDetailActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case CREATE_TASK_REQUEST_CODE:
+
+                break;
+            default:
+        }
     }
 
     @Override
@@ -137,11 +156,11 @@ public class GroupDetailActivity extends AppCompatActivity
 
     @OnClick(R.id.fab_add_task)
     public void onAddTask() {
-        // TODO Add task
         Log.d(TAG, "Add task button clicked");
         Intent intent = new Intent(this, CreateTaskActivity.class);
         // need to pass along the group ID for task creation
         intent.putExtra(CreateTaskActivity.GROUP_PARCEL_KEY, mGroupInstance);
-        startActivity(intent);
+        intent.putExtra(CreateTaskActivity.GROUP_ID_KEY, mGroupId);
+        startActivityForResult(intent, CREATE_TASK_REQUEST_CODE);
     }
 }

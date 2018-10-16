@@ -8,9 +8,8 @@
     tools:context=".TodaysTasksActivity"
     tools:showIn="@layout/activity_todays_tasks">
 
-    <fragment
-        android:id="@+id/todays_tasks_fragment"
-        android:name="com.google.firebase.example.takecare.TaskListFragment"
+    <FrameLayout
+        android:id="@+id/todays_tasks_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
