@@ -8,11 +8,22 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.example.takecare.MainActivity;
 import com.google.firebase.example.takecare.R;
+import com.google.firebase.example.takecare.model.User;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -119,8 +130,33 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      *
      * @param token The new token.
      */
-    private void sendRegistrationToServer(String token) {
+    private void sendRegistrationToServer(final String token) {
         // TODO: Implement this method to send token to your app server.
+        FirebaseUser curUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (curUser != null) {
+            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+            DocumentReference userRef = firestore.collection("users").document(curUser.getEmail());
+
+            addTokenForUser(userRef, curUser, token).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "Token added for user: "  + token);
+                }
+            });
+        }
+    }
+
+    private Task<Void> addTokenForUser(final DocumentReference userRef,
+                                       final FirebaseUser user,
+                                       final String token) {
+        return FirebaseFirestore.getInstance().runTransaction(new Transaction.Function<Void>() {
+            @Nullable
+            @Override
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                transaction.set(userRef, new User(user, token));
+                return null;
+            }
+        });
     }
 
     /**
