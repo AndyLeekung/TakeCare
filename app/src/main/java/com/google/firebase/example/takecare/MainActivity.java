@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.design.internal.BottomNavigationMenu;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -58,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.btn_groups)
     Button mGroupsBtn;
 
+    @BindView(R.id.navigation)
+    BottomNavigationView mBottomNav;
+
     private FirebaseFirestore mFirestore;
     private Query mQuery;
 
@@ -66,12 +71,35 @@ public class MainActivity extends AppCompatActivity {
 
     private MainActivityViewModel mViewModel;
 
+    private BottomNavigationView.OnNavigationItemSelectedListener mNavigationListener =
+            new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    switch (item.getItemId()) {
+                        case  R.id.navigation_home:
+                            Log.d(TAG, "Navigation Home");
+                            return true;
+                        case R.id.navigation_groups:
+                            Log.d(TAG, "Navigation Groups");
+
+                            return true;
+                        case R.id.navigation_notifications:
+                            Log.d(TAG, "Navigation Notifications");
+
+                            return true;
+                    }
+                    return false;
+                }
+            };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
+
+        mBottomNav.setOnNavigationItemSelectedListener(mNavigationListener);
 
         // View model
         mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);

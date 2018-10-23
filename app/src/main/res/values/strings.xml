@@ -144,4 +144,8 @@
     <string name="title_activity_group">GroupActivity</string>
     <string name="title_activity_group_detail">GroupDetailActivity</string>
     <string name="title_activity_create_task">Create Task</string>
+    <string name="title_activity_main_nav">MainNavActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_groups">Groups</string>
+    <string name="title_notifications">Notifications</string>
 </resources>

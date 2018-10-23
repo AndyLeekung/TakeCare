@@ -34,14 +34,16 @@
         <activity
             android:name=".GroupDetailActivity"
             android:label="@string/title_activity_group_detail"
-            android:theme="@style/AppTheme"
+            android:launchMode="singleTop"
             android:parentActivityName=".GroupListActivity"
-            android:launchMode="singleTop" />
+            android:theme="@style/AppTheme" />
+
         <service android:name=".service.MyFirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <activity
             android:name=".CreateTaskActivity"
             android:label="@string/title_activity_create_task"
@@ -51,6 +53,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.google.firebase.example.takecare.GroupDetailActivity" />
         </activity>
+        <activity
+            android:name=".MainNavActivity"
+            android:label="@string/title_activity_main_nav"></activity>
     </application>
 
 </manifest>

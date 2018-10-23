@@ -72,6 +72,7 @@ public class GroupListActivity extends AppCompatActivity
                 //handle the home button onClick event here.
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
+
         }
 
         return super.onOptionsItemSelected(item);
