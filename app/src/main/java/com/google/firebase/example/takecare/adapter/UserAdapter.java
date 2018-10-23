@@ -38,7 +38,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     public UserAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // TODO make new layout for user email list item
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_task_list_item, parent, false);
+                .inflate(android.R.layout.simple_list_item_1, parent, false);
         return new UserAdapter.ViewHolder(view);
     }
 
@@ -68,7 +68,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
 
-        @BindView(R.id.content_text)
+        @BindView(android.R.id.text1)
         public TextView mContentView;
 
         public String mItem;

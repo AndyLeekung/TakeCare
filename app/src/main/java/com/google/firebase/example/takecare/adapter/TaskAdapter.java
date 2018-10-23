@@ -4,6 +4,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.firebase.example.takecare.R;
@@ -48,11 +50,14 @@ public class TaskAdapter extends FirestoreAdapter<TaskAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
+        @BindView(R.id.task_checkbox)
+        CheckBox mCheckbox;
+
         @BindView(R.id.content_text)
         TextView mTaskView;
 
-        @BindView(R.id.deadline_text)
-        TextView mDeadlineView;
+        @BindView(R.id.btn_delete_task)
+        ImageButton mBtnDelete;
 
         public ViewHolder(View itemView) {
             super(itemView);

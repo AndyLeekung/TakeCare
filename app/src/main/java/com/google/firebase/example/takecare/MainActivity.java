@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.internal.BottomNavigationMenu;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
@@ -29,10 +31,13 @@ import com.google.firebase.example.takecare.model.User;
 import com.google.firebase.example.takecare.viewmodel.MainActivityViewModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.Collections;
 
@@ -40,7 +45,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements TaskListFragment.OnTaskSelectedListener,
+        GroupListFragment.OnGroupSelectedListener{
 
     private static final String TAG = "MainActivity";
 
@@ -51,17 +58,12 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @BindView(R.id.btn_todays_tasks)
-    Button mTodaysTasksBtn;
-
-    @BindView(R.id.btn_subscribed_tasks)
-    Button mSubscribedTasksBtn;
-
-    @BindView(R.id.btn_groups)
-    Button mGroupsBtn;
-
     @BindView(R.id.navigation)
     BottomNavigationView mBottomNav;
+
+    @BindView(R.id.fragment_container)
+    FrameLayout mFragmentContainer;
+
 
     private FirebaseFirestore mFirestore;
     private Query mQuery;
@@ -78,10 +80,11 @@ public class MainActivity extends AppCompatActivity {
                     switch (item.getItemId()) {
                         case  R.id.navigation_home:
                             Log.d(TAG, "Navigation Home");
+                            switchToTodaysTasks();
                             return true;
                         case R.id.navigation_groups:
                             Log.d(TAG, "Navigation Groups");
-
+                            switchToGroups();
                             return true;
                         case R.id.navigation_notifications:
                             Log.d(TAG, "Navigation Notifications");
@@ -109,6 +112,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Firestore
         mFirestore = FirebaseFirestore.getInstance();
+
+        if (!shouldStartSignIn()) {
+            switchToTodaysTasks();
+        }
 
     }
 
@@ -172,38 +179,40 @@ public class MainActivity extends AppCompatActivity {
                 }
             } else {
                 // Store user in database
-                FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+                final FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
                 if (fbUser != null) {
-                    final User user = new User(fbUser);
-                    addUser(user).addOnSuccessListener(this, new OnSuccessListener<Void>() {
+                    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
                         @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, user.getEmail() + " added to Firestore");
+                        public void onSuccess(InstanceIdResult instanceIdResult) {
+                            String token = instanceIdResult.getToken();
+                            final User user = new User(fbUser, token);
+                            addUser(user).addOnSuccessListener(MainActivity.this, new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d(TAG, user.getEmail() + " added to Firestore");
+                                }
+                            });
                         }
                     });
+
                 }
             }
         }
     }
 
-    @OnClick(R.id.btn_todays_tasks)
-    public void onTodaysTasksClicked() {
+    @Override
+    public void onTaskClicked(com.google.firebase.example.takecare.model.Task item) {
         // TODO
-        Log.d(TAG, "todays tasks clicked");
-        Intent intent = new Intent(this, TodaysTasksActivity.class);
-        startActivity(intent);
     }
 
-    @OnClick(R.id.btn_subscribed_tasks)
-    public void onSubscribedTasksClicked() {
-        // TODO
+    @Override
+    public void onGroupSelected(DocumentSnapshot group) {
+        // TODO go to group activity
+        String groupId = group.getId();
+        Log.d(TAG, "Group ID: " + groupId + " clicked");
+        Intent intent = new Intent(this, GroupDetailActivity.class);
+        intent.putExtra(GroupDetailActivity.GROUP_ID_KEY, groupId);
 
-    }
-
-    @OnClick(R.id.btn_groups)
-    public void onGroupsClicked() {
-        // TODO
-        Intent intent = new Intent(this, GroupListActivity.class);
         startActivity(intent);
     }
 
@@ -318,4 +327,21 @@ public class MainActivity extends AppCompatActivity {
 
         dialog.show();
     }
+
+    private void switchToTodaysTasks() {
+        mToolbar.setTitle(R.string.todays_tasks);
+        String curUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(mFragmentContainer.getId(),
+                TaskListFragment.newInstance(TaskListFragment.TaskListType.UserTasks, curUserEmail))
+                .commit();
+    }
+
+    private void switchToGroups() {
+        mToolbar.setTitle(R.string.groups);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(mFragmentContainer.getId(),
+                GroupListViewFragment.newInstance()).commit();
+    }
+
 }
