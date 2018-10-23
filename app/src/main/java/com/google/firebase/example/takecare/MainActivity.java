@@ -206,6 +206,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onTaskCheckBoxChange(com.google.firebase.example.takecare.model.Task task, boolean checked) {
+        // TODO
+        Log.d(TAG, "Task checkbox: " + checked);
+    }
+
+    @Override
+    public void onTaskDeleteClicked(com.google.firebase.example.takecare.model.Task task) {
+        // TODO
+        Log.d(TAG, "Task delete click");
+    }
+
+    @Override
     public void onGroupSelected(DocumentSnapshot group) {
         // TODO go to group activity
         String groupId = group.getId();

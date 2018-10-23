@@ -148,6 +148,10 @@ public class TaskListFragment extends Fragment {
      */
     public interface OnTaskSelectedListener {
         // TODO: Update argument type and name
-        void onTaskClicked(Task item);
+        void onTaskClicked(Task task);
+
+        void onTaskCheckBoxChange(Task task, boolean checked);
+
+        void onTaskDeleteClicked(Task task);
     }
 }

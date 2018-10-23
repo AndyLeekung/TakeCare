@@ -136,6 +136,18 @@ public class GroupDetailActivity extends AppCompatActivity
         Log.d(TAG, "task selected");
     }
 
+    @Override
+    public void onTaskCheckBoxChange(Task task, boolean checked) {
+        // TODO
+        Log.d(TAG, "Task checkbox: " + checked);
+    }
+
+    @Override
+    public void onTaskDeleteClicked(Task task) {
+        // TODO
+        Log.d(TAG, "Task delete click");
+    }
+
     /**
      * Listener for the Group document ({@link #mGroupRef}).
      */

@@ -84,9 +84,6 @@ public class UserListFragment extends Fragment
 
         // TODO query emails
         mGroupRef = mFirestore.collection("groups").document(mGroupId);
-//        // Set the adapter
-//        mUserAdapter = new UserAdapter(membersQuery, mListener);
-//        mUserRecycler.setAdapter(mUserAdapter);
 
         return view;
     }

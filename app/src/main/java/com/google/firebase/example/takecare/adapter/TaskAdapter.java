@@ -1,6 +1,8 @@
 package com.google.firebase.example.takecare.adapter;
 
+import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
+import butterknife.OnClick;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Task} and makes a call to the
@@ -28,6 +32,8 @@ import butterknife.ButterKnife;
  */
 
 public class TaskAdapter extends FirestoreAdapter<TaskAdapter.ViewHolder> {
+
+    private final static String TAG = "TaskAdapter";
 
     private final OnTaskSelectedListener mListener;
 
@@ -59,17 +65,24 @@ public class TaskAdapter extends FirestoreAdapter<TaskAdapter.ViewHolder> {
         @BindView(R.id.btn_delete_task)
         ImageButton mBtnDelete;
 
+        Task mTask;
+
+        OnTaskSelectedListener mListener;
+
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-       public void bind(final DocumentSnapshot snapshot,
-                        final TaskListFragment.OnTaskSelectedListener listener) {
+        public void bind(final DocumentSnapshot snapshot,
+                         final TaskListFragment.OnTaskSelectedListener listener) {
             final Task task = snapshot.toObject(Task.class);
+            mTask = task;
 
             mTaskView.setText(task.getText());
 //            mDeadlineView.setText(task.getDeadline().toString());
+
+            mListener = listener;
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -79,6 +92,35 @@ public class TaskAdapter extends FirestoreAdapter<TaskAdapter.ViewHolder> {
                     }
                 }
             });
-       }
+        }
+
+        @OnClick(R.id.content_text)
+        void onTaskClicked() {
+            if (mListener != null) {
+                mListener.onTaskClicked(mTask);
+            }
+        }
+
+        @OnCheckedChanged(R.id.task_checkbox)
+        void onCheckboxChanged(CheckBox checkbox, boolean checked) {
+            Log.d(TAG, "Checkbox: " + checked);
+            if (checked) {
+                mTaskView.setPaintFlags(mTaskView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            } else {
+                mTaskView.setPaintFlags(mTaskView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            }
+
+            if (mListener != null) {
+                mListener.onTaskCheckBoxChange(mTask, checked);
+            }
+        }
+
+        @OnClick(R.id.btn_delete_task)
+        void onDeleteClicked() {
+            if (mListener != null) {
+                mListener.onTaskDeleteClicked(mTask);
+            }
+            notifyDataSetChanged();
+        }
     }
 }
