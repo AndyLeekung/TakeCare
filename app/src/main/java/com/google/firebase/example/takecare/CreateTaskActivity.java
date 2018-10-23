@@ -52,15 +52,11 @@ public class CreateTaskActivity extends AppCompatActivity {
     Spinner mAssigneeSpinner;
 
     @BindView(R.id.edit_date)
-    EditText mEditDate;
-
-    @BindView(R.id.edit_time)
-    EditText mEditTime;
+    EditText mEditDeadline;
 
     private DatePickerDialog mDatePicker;
     private TimePickerDialog mTimePicker;
-    private SimpleDateFormat mDateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
-    private SimpleDateFormat mTimeFormat = new SimpleDateFormat("hh:mm a", Locale.US);
+    private SimpleDateFormat mDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.US);
     private Date mDate;
 
     public static final String GROUP_PARCEL_KEY = "create_task_group_parcel";
@@ -99,8 +95,7 @@ public class CreateTaskActivity extends AppCompatActivity {
         }
         mGroupId = getIntent().getExtras().getString(GROUP_ID_KEY);
 
-        mEditDate.setInputType(InputType.TYPE_NULL);
-        mEditTime.setInputType(InputType.TYPE_NULL);
+        mEditDeadline.setInputType(InputType.TYPE_NULL);
 
         mDate = new Date();
 
@@ -137,13 +132,14 @@ public class CreateTaskActivity extends AppCompatActivity {
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 mDate = new Date(year - 1900, month, day);
                 // have to show year - 1900 because Date class is relative to 1900
-                mEditDate.setText(mDateFormat.format(mDate));
+                mEditDeadline.setText(mDateFormat.format(mDate));
+                onEditTime();
             }
         }, year, month, day);
         mDatePicker.show();
     }
 
-    @OnClick(R.id.edit_time)
+//    @OnClick(R.id.edit_time)
     public void onEditTime() {
         Date curTime = Calendar.getInstance().getTime();
 
@@ -152,7 +148,8 @@ public class CreateTaskActivity extends AppCompatActivity {
             public void onTimeSet(TimePicker timePicker, int hour, int minute) {
                 mDate.setHours(hour);
                 mDate.setMinutes(minute);
-                mEditTime.setText(mTimeFormat.format(mDate));
+                mEditDeadline.setText(mDateFormat.format(mDate));
+
             }
         }, curTime.getHours(), curTime.getMinutes(), false);
         mTimePicker.show();
@@ -161,10 +158,9 @@ public class CreateTaskActivity extends AppCompatActivity {
     @OnClick(R.id.fab_create_task)
     public void onCreateTask(final View view) {
         String name = mEditName.getText().toString();
-        String date = mEditDate.getText().toString();
-        String time = mEditTime.getText().toString();
+        String date = mEditDeadline.getText().toString();
         String owner = mAssigneeSpinner.getSelectedItem().toString();
-        if (name.equals("") || date.equals("") || time.equals("") || owner.equals("")) {
+        if (name.equals("") || date.equals("") || owner.equals("")) {
             Snackbar.make(view, "Error: please enter valid input", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         } else {

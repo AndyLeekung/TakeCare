@@ -18,8 +18,10 @@ public class TaskStore {
         WriteBatch batch = firestore.batch();
 
         // Add task to group
-        batch.set(groupRef.collection("tasks").document(), task);
-        batch.set(userRef.collection("tasks").document(), task);
+        // Use the same ID for both the groups
+        DocumentReference groupTaskRef = groupRef.collection("tasks").document();
+        batch.set(groupTaskRef, task);
+        batch.set(userRef.collection("tasks").document(groupTaskRef.getId()), task);
 
         return batch.commit();
     }

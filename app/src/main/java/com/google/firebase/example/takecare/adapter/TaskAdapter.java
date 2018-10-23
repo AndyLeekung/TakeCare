@@ -66,6 +66,7 @@ public class TaskAdapter extends FirestoreAdapter<TaskAdapter.ViewHolder> {
         ImageButton mBtnDelete;
 
         Task mTask;
+        String mTaskId;
 
         OnTaskSelectedListener mListener;
 
@@ -77,10 +78,10 @@ public class TaskAdapter extends FirestoreAdapter<TaskAdapter.ViewHolder> {
         public void bind(final DocumentSnapshot snapshot,
                          final TaskListFragment.OnTaskSelectedListener listener) {
             final Task task = snapshot.toObject(Task.class);
+            mTaskId = snapshot.getId();
             mTask = task;
 
             mTaskView.setText(task.getText());
-//            mDeadlineView.setText(task.getDeadline().toString());
 
             mListener = listener;
 
