@@ -2,6 +2,7 @@ package com.google.firebase.example.takecare;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -12,8 +13,13 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.example.takecare.model.Group;
 import com.google.firebase.example.takecare.model.Task;
+import com.google.firebase.example.takecare.store.TaskStore;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -137,15 +143,40 @@ public class GroupDetailActivity extends AppCompatActivity
     }
 
     @Override
-    public void onTaskCheckBoxChange(Task task, boolean checked) {
+    public void onTaskCheckBoxChange(com.google.firebase.example.takecare.model.Task task, boolean checked) {
         // TODO
         Log.d(TAG, "Task checkbox: " + checked);
+        final FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        task.setComplete(checked);
+        TaskStore.editTask(task, fbUser.getEmail()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Task edited");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Task failed to edit");
+            }
+        });
     }
 
     @Override
-    public void onTaskDeleteClicked(Task task) {
+    public void onTaskDeleteClicked(com.google.firebase.example.takecare.model.Task task) {
         // TODO
         Log.d(TAG, "Task delete click");
+        final FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        TaskStore.deleteTask(task, fbUser.getEmail()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Task deleted");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Task failed to delete");
+            }
+        });
     }
 
     /**

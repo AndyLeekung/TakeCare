@@ -22,12 +22,14 @@ import android.widget.FrameLayout;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.example.takecare.adapter.RestaurantAdapter;
 import com.google.firebase.example.takecare.model.User;
+import com.google.firebase.example.takecare.store.TaskStore;
 import com.google.firebase.example.takecare.viewmodel.MainActivityViewModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -209,12 +211,37 @@ public class MainActivity extends AppCompatActivity
     public void onTaskCheckBoxChange(com.google.firebase.example.takecare.model.Task task, boolean checked) {
         // TODO
         Log.d(TAG, "Task checkbox: " + checked);
+        final FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        task.setComplete(checked);
+        TaskStore.editTask(task, fbUser.getEmail()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Task edited");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Task failed to edit");
+            }
+        });
     }
 
     @Override
     public void onTaskDeleteClicked(com.google.firebase.example.takecare.model.Task task) {
         // TODO
         Log.d(TAG, "Task delete click");
+        final FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        TaskStore.deleteTask(task, fbUser.getEmail()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Task deleted");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Task failed to delete");
+            }
+        });
     }
 
     @Override

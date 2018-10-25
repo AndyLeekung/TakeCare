@@ -173,7 +173,7 @@ public class CreateTaskActivity extends AppCompatActivity {
             Timestamp deadline = new Timestamp(mDate);
             task.setDeadline(deadline);
 
-            TaskStore.saveTask(task, curUser, mGroupId).addOnSuccessListener(new OnSuccessListener<Void>() {
+            TaskStore.saveTask(task, curUser.getEmail(), mGroupId).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     Log.d(TAG, "Task saved");

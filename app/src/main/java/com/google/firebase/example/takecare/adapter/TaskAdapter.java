@@ -67,6 +67,7 @@ public class TaskAdapter extends FirestoreAdapter<TaskAdapter.ViewHolder> {
 
         Task mTask;
         String mTaskId;
+        DocumentSnapshot mSnapshot;
 
         OnTaskSelectedListener mListener;
 
@@ -80,10 +81,12 @@ public class TaskAdapter extends FirestoreAdapter<TaskAdapter.ViewHolder> {
             final Task task = snapshot.toObject(Task.class);
             mTaskId = snapshot.getId();
             mTask = task;
+            mSnapshot = snapshot;
 
             mTaskView.setText(task.getText());
 
             mListener = listener;
+            mCheckbox.setChecked(task.isComplete());
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
