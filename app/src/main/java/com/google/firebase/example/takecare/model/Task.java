@@ -5,8 +5,8 @@ import com.google.firebase.Timestamp;
 public class Task {
 
     private String taskId;
-    private User creator;
-    private User owner;
+    private String creator;
+    private String owner;
     private String text;
     private Timestamp deadline;
     private boolean isComplete;
@@ -22,19 +22,19 @@ public class Task {
         this.taskId = taskId;
     }
 
-    public User getCreator() {
+    public String getCreator() {
         return creator;
     }
 
-    public void setCreator(User creator) {
+    public void setCreator(String creator) {
         this.creator = creator;
     }
 
-    public User getOwner() {
+    public String getOwner() {
         return owner;
     }
 
-    public void setOwner(User owner) {
+    public void setOwner(String owner) {
         this.owner = owner;
     }
 

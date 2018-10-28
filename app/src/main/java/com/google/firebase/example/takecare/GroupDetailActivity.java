@@ -1,5 +1,6 @@
 package com.google.firebase.example.takecare;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,10 +8,14 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -19,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.example.takecare.model.Group;
 import com.google.firebase.example.takecare.model.Task;
+import com.google.firebase.example.takecare.store.GroupStore;
 import com.google.firebase.example.takecare.store.TaskStore;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -59,6 +65,9 @@ public class GroupDetailActivity extends AppCompatActivity
     private Group mGroupInstance;
     private String mGroupId;
 
+    private EditText mDialongInput;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +99,12 @@ public class GroupDetailActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_group, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
@@ -97,6 +112,12 @@ public class GroupDetailActivity extends AppCompatActivity
                 //handle the home button onClick event here.
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
+            case R.id.menu_add_member:
+                Log.d(TAG, "Add member");
+                onAddMember();
+                return true;
+            case R.id.menu_change_group_name:
+                onChangeName();
         }
 
         return super.onOptionsItemSelected(item);
@@ -206,4 +227,82 @@ public class GroupDetailActivity extends AppCompatActivity
         intent.putExtra(CreateTaskActivity.GROUP_ID_KEY, mGroupId);
         startActivityForResult(intent, CREATE_TASK_REQUEST_CODE);
     }
+
+    private void onAddMember() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.add_member);
+
+        // Set up add member input
+        mDialongInput = new EditText(this);
+        mDialongInput.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+//        mDialongInput.setPadding(16, 0, 16, 0);
+
+        builder.setView(mDialongInput);
+
+        builder.setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String email = mDialongInput.getText().toString();
+                mGroupInstance.getMembers().add(email);
+                GroupStore.editGroup(mGroupInstance, mGroupId).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Group member added");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Group member failed to add");
+                    }
+                });
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void onChangeName() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.change_group_name);
+
+        // Set up add member input
+        mDialongInput = new EditText(this);
+        mDialongInput.setInputType(InputType.TYPE_TEXT_VARIATION_NORMAL);
+
+        builder.setView(mDialongInput);
+
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String name = mDialongInput.getText().toString();
+                mGroupInstance.setName(name);
+                GroupStore.editGroup(mGroupInstance, mGroupId).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Group name changed");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Group name failed to change");
+                    }
+                });
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
 }

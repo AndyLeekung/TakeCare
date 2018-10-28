@@ -168,12 +168,12 @@ public class CreateTaskActivity extends AppCompatActivity {
             User curUser = new User(mFirebaseAuth.getCurrentUser());
             Task task = new Task();
             task.setText(name);
-            task.setCreator(curUser);
-            task.setOwner(curUser);
+            task.setCreator(curUser.getEmail());
+            task.setOwner(owner);
             Timestamp deadline = new Timestamp(mDate);
             task.setDeadline(deadline);
 
-            TaskStore.saveTask(task, curUser.getEmail(), mGroupId).addOnSuccessListener(new OnSuccessListener<Void>() {
+            TaskStore.saveTask(task, owner, mGroupId).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     Log.d(TAG, "Task saved");

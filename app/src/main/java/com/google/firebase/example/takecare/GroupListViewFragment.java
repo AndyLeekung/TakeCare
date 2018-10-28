@@ -32,6 +32,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.google.firebase.example.takecare.store.GroupStore.addGroup;
+
 public class GroupListViewFragment extends Fragment {
 
     private static final String TAG = "GroupListViewFragment";
@@ -77,7 +79,7 @@ public class GroupListViewFragment extends Fragment {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             Group newGroup = new Group(currentUser);
-            addGroup(mGroupColRef, newGroup)
+            addGroup(newGroup)
                     .addOnSuccessListener(getActivity(), new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -91,21 +93,6 @@ public class GroupListViewFragment extends Fragment {
                         }
                     });
         }
-    }
-
-    private Task<Void> addGroup(final CollectionReference groupColRef,
-                                final Group group) {
-        // Create reference for new Group, for use inside the transaction
-        final DocumentReference groupRef = groupColRef.document();
-
-        return mFirestore.runTransaction(new Transaction.Function<Void>() {
-            @Nullable
-            @Override
-            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                transaction.set(groupRef, group);
-                return null;
-            }
-        });
     }
 
 //    @Override

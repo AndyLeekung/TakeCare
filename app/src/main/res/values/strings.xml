@@ -148,4 +148,7 @@
     <string name="title_home">Home</string>
     <string name="title_groups">Groups</string>
     <string name="title_notifications">Notifications</string>
+    <string name="add_member">Add Member</string>
+    <string name="add">Add</string>
+    <string name="change_group_name">Change Group Name</string>
 </resources>
