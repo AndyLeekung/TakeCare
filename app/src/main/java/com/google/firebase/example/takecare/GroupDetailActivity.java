@@ -185,7 +185,6 @@ public class GroupDetailActivity extends AppCompatActivity
     public void onTaskDeleteClicked(com.google.firebase.example.takecare.model.Task task) {
         // TODO
         Log.d(TAG, "Task delete click");
-        final FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
         TaskStore.deleteTask(task, task.getOwner()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
