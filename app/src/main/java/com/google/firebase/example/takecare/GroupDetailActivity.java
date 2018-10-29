@@ -168,7 +168,7 @@ public class GroupDetailActivity extends AppCompatActivity
         // TODO
         Log.d(TAG, "Task checkbox: " + checked);
         task.setComplete(checked);
-        TaskStore.editTask(task, task.getOwner()).addOnSuccessListener(new OnSuccessListener<Void>() {
+        TaskStore.editTask(task).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "Task edited");
@@ -185,7 +185,7 @@ public class GroupDetailActivity extends AppCompatActivity
     public void onTaskDeleteClicked(com.google.firebase.example.takecare.model.Task task) {
         // TODO
         Log.d(TAG, "Task delete click");
-        TaskStore.deleteTask(task, task.getOwner()).addOnSuccessListener(new OnSuccessListener<Void>() {
+        TaskStore.deleteTask(task).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "Task deleted");
@@ -271,7 +271,7 @@ public class GroupDetailActivity extends AppCompatActivity
 
         // Set up add member input
         mDialongInput = new EditText(this);
-        mDialongInput.setInputType(InputType.TYPE_TEXT_VARIATION_NORMAL);
+        mDialongInput.setInputType(InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
 
         builder.setView(mDialongInput);
 

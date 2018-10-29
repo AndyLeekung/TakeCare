@@ -30,8 +30,7 @@ public class TaskStore {
         return batch.commit();
     }
 
-    public static Task<Void> editTask(com.google.firebase.example.takecare.model.Task task,
-                                      String email) {
+    public static Task<Void> editTask(com.google.firebase.example.takecare.model.Task task) {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
         WriteBatch batch = firestore.batch();
@@ -40,7 +39,7 @@ public class TaskStore {
         String taskId = task.getTaskId();
 
         DocumentReference userRef = firestore.collection("users")
-                .document(email).collection("tasks").document(taskId);
+                .document(task.getOwner()).collection("tasks").document(taskId);
 
         DocumentReference groupRef = firestore.collection("groups")
                 .document(groupId).collection("tasks").document(taskId);
@@ -51,8 +50,7 @@ public class TaskStore {
         return batch.commit();
     }
 
-    public static Task<Void> deleteTask(com.google.firebase.example.takecare.model.Task task,
-                                      String email) {
+    public static Task<Void> deleteTask(com.google.firebase.example.takecare.model.Task task) {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
         WriteBatch batch = firestore.batch();
@@ -61,7 +59,7 @@ public class TaskStore {
         String taskId = task.getTaskId();
 
         DocumentReference userRef = firestore.collection("users")
-                .document(email).collection("tasks").document(taskId);
+                .document(task.getOwner()).collection("tasks").document(taskId);
 
         DocumentReference groupRef = firestore.collection("groups")
                 .document(groupId).collection("tasks").document(taskId);

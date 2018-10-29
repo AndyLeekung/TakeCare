@@ -88,10 +88,10 @@ public class MainActivity extends AppCompatActivity
                             Log.d(TAG, "Navigation Groups");
                             switchToGroups();
                             return true;
-                        case R.id.navigation_notifications:
-                            Log.d(TAG, "Navigation Notifications");
-
-                            return true;
+//                        case R.id.navigation_notifications:
+//                            Log.d(TAG, "Navigation Notifications");
+//
+//                            return true;
                     }
                     return false;
                 }
@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity
         // TODO
         Log.d(TAG, "Task checkbox: " + checked);
         task.setComplete(checked);
-        TaskStore.editTask(task, task.getOwner()).addOnSuccessListener(new OnSuccessListener<Void>() {
+        TaskStore.editTask(task).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "Task edited");
@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity
     public void onTaskDeleteClicked(com.google.firebase.example.takecare.model.Task task) {
         // TODO
         Log.d(TAG, "Task delete click");
-        TaskStore.deleteTask(task, task.getOwner()).addOnSuccessListener(new OnSuccessListener<Void>() {
+        TaskStore.deleteTask(task).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "Task deleted");
