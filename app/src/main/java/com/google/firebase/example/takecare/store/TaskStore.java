@@ -39,7 +39,6 @@ public class TaskStore {
         String groupId = task.getGroupId();
         String taskId = task.getTaskId();
 
-
         DocumentReference userRef = firestore.collection("users")
                 .document(email).collection("tasks").document(taskId);
 

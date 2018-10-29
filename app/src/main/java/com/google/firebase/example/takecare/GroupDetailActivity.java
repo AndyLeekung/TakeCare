@@ -167,9 +167,8 @@ public class GroupDetailActivity extends AppCompatActivity
     public void onTaskCheckBoxChange(com.google.firebase.example.takecare.model.Task task, boolean checked) {
         // TODO
         Log.d(TAG, "Task checkbox: " + checked);
-        final FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
         task.setComplete(checked);
-        TaskStore.editTask(task, fbUser.getEmail()).addOnSuccessListener(new OnSuccessListener<Void>() {
+        TaskStore.editTask(task, task.getOwner()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "Task edited");
@@ -187,7 +186,7 @@ public class GroupDetailActivity extends AppCompatActivity
         // TODO
         Log.d(TAG, "Task delete click");
         final FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
-        TaskStore.deleteTask(task, fbUser.getEmail()).addOnSuccessListener(new OnSuccessListener<Void>() {
+        TaskStore.deleteTask(task, task.getOwner()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "Task deleted");
