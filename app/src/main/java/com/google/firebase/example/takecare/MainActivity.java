@@ -366,11 +366,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void switchToTodaysTasks() {
-        mToolbar.setTitle(R.string.todays_tasks);
+        mToolbar.setTitle(R.string.app_name);
         String curUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(mFragmentContainer.getId(),
-                TaskListFragment.newInstance(TaskListFragment.TaskListType.UserTasks, curUserEmail))
+                UserTasksFragment.newInstance(curUserEmail))
                 .commit();
     }
 
