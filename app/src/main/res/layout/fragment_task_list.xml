@@ -8,6 +8,9 @@
     android:layout_height="match_parent"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:scaleType="fitXY"
     app:layoutManager="LinearLayoutManager"
     tools:context=".TaskListFragment"
     tools:listitem="@layout/fragment_task_list_item" />
