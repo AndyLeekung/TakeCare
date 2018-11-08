@@ -60,7 +60,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginStart="16dp"
-                android:textAppearance="?attr/textAppearanceListItem"
+                android:textAppearance="@android:style/TextAppearance.Material.Large"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/btn_delete_task"
                 app:layout_constraintStart_toEndOf="@+id/task_checkbox"

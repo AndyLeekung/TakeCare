@@ -17,6 +17,7 @@
         android:layout_marginTop="8dp"
         android:text="@string/upcoming_tasks"
         android:textAppearance="@android:style/TextAppearance.Material.Title"
+        android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
