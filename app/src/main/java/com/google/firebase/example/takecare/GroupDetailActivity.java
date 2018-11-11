@@ -118,6 +118,10 @@ public class GroupDetailActivity extends AppCompatActivity
                 return true;
             case R.id.menu_change_group_name:
                 onChangeName();
+                return true;
+            case R.id.delete_group:
+                onDeleteGroup();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -160,7 +164,12 @@ public class GroupDetailActivity extends AppCompatActivity
     @Override
     public void onTaskClicked(Task task) {
         // TODO do something when task is clicked
-        Log.d(TAG, "task selected");
+        Log.d(TAG, "Add task button clicked");
+        Intent intent = new Intent(this, CreateTaskActivity.class);
+        // need to pass along the group ID for task creation
+        intent.putExtra(CreateTaskActivity.GROUP_ID_KEY, mGroupId);
+        intent.putExtra(CreateTaskActivity.TASK_KEY, task);
+        startActivityForResult(intent, CREATE_TASK_REQUEST_CODE);
     }
 
     @Override
@@ -221,7 +230,6 @@ public class GroupDetailActivity extends AppCompatActivity
         Log.d(TAG, "Add task button clicked");
         Intent intent = new Intent(this, CreateTaskActivity.class);
         // need to pass along the group ID for task creation
-        intent.putExtra(CreateTaskActivity.GROUP_PARCEL_KEY, mGroupInstance);
         intent.putExtra(CreateTaskActivity.GROUP_ID_KEY, mGroupId);
         startActivityForResult(intent, CREATE_TASK_REQUEST_CODE);
     }
@@ -301,6 +309,23 @@ public class GroupDetailActivity extends AppCompatActivity
         });
 
         builder.show();
+    }
+
+    private void onDeleteGroup() {
+        // TODO tasks for individuals need to be deleted
+
+        GroupStore.deleteGroup(mGroupId).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Group deleted");
+                NavUtils.navigateUpFromSameTask(GroupDetailActivity.this);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Group failed to delete");
+            }
+        });
     }
 
 }

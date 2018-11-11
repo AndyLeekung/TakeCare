@@ -1,8 +1,11 @@
 package com.google.firebase.example.takecare.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.firebase.Timestamp;
 
-public class Task {
+public class Task implements Parcelable {
 
     private String taskId;
     private String creator;
@@ -69,4 +72,42 @@ public class Task {
     public void setComplete(boolean complete) {
         isComplete = complete;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.taskId);
+        dest.writeString(this.creator);
+        dest.writeString(this.owner);
+        dest.writeString(this.text);
+        dest.writeParcelable(this.deadline, flags);
+        dest.writeByte(this.isComplete ? (byte) 1 : (byte) 0);
+        dest.writeString(this.groupId);
+    }
+
+    protected Task(Parcel in) {
+        this.taskId = in.readString();
+        this.creator = in.readString();
+        this.owner = in.readString();
+        this.text = in.readString();
+        this.deadline = in.readParcelable(Timestamp.class.getClassLoader());
+        this.isComplete = in.readByte() != 0;
+        this.groupId = in.readString();
+    }
+
+    public static final Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
+        @Override
+        public Task createFromParcel(Parcel source) {
+            return new Task(source);
+        }
+
+        @Override
+        public Task[] newArray(int size) {
+            return new Task[size];
+        }
+    };
 }

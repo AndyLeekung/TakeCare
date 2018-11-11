@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MainActivity";
 
     private static final int RC_SIGN_IN = 9001;
+    private static final int EDIT_TASK_REQUEST_CODE = 9002;
 
     private static final int LIMIT = 50;
 
@@ -203,8 +204,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onTaskClicked(com.google.firebase.example.takecare.model.Task item) {
-        // TODO
+    public void onTaskClicked(com.google.firebase.example.takecare.model.Task task) {
+        Intent intent = new Intent(this, CreateTaskActivity.class);
+        // need to pass along the group ID for task creation
+        intent.putExtra(CreateTaskActivity.TASK_KEY, task);
+        startActivityForResult(intent, EDIT_TASK_REQUEST_CODE);
     }
 
     @Override

@@ -45,4 +45,14 @@ public class GroupStore {
             }
         });
     }
+
+    public static Task<Void> deleteGroup(final String groupId) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        CollectionReference groupColRef = firestore.collection("groups");
+
+
+        final DocumentReference groupRef = groupColRef.document(groupId);
+
+        return groupRef.delete();
+    }
 }

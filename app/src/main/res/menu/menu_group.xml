@@ -6,4 +6,7 @@
     <item
         android:id="@+id/menu_add_member"
         android:title="@string/add_member" />
+    <item
+        android:id="@+id/delete_group"
+        android:title="@string/delete_group" />
 </menu>

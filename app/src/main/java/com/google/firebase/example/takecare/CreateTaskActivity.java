@@ -27,7 +27,12 @@ import com.google.firebase.example.takecare.model.Group;
 import com.google.firebase.example.takecare.model.Task;
 import com.google.firebase.example.takecare.model.User;
 import com.google.firebase.example.takecare.store.TaskStore;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -38,7 +43,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class CreateTaskActivity extends AppCompatActivity {
+public class CreateTaskActivity extends AppCompatActivity
+        implements EventListener<DocumentSnapshot> {
 
     private static final String TAG = "CreateTaskActivity";
 
@@ -61,11 +67,15 @@ public class CreateTaskActivity extends AppCompatActivity {
 
     public static final String GROUP_PARCEL_KEY = "create_task_group_parcel";
     public static final String GROUP_ID_KEY = "group_id_key";
-    public static final String USER_PARCEL_KEY = "create_task_user_parcel";
+    public static final String TASK_KEY = "task_key";
     private FirebaseFirestore mFirestore;
     private FirebaseAuth mFirebaseAuth;
     private Group mGroup;
     private String mGroupId;
+    private Task mTask;
+
+    private DocumentReference mGroupRef;
+    private ListenerRegistration mGroupRegistration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,21 +99,23 @@ public class CreateTaskActivity extends AppCompatActivity {
         mFirebaseAuth = FirebaseAuth.getInstance();
 
         // Get Group ID from extras
-        mGroup = (Group) getIntent().getParcelableExtra(GROUP_PARCEL_KEY);
-        if (mGroup == null) {
-            throw new IllegalArgumentException("Must pass extra " + GROUP_PARCEL_KEY);
-        }
         mGroupId = getIntent().getExtras().getString(GROUP_ID_KEY);
+        mTask = getIntent().getExtras().getParcelable(TASK_KEY);
 
         mEditDeadline.setInputType(InputType.TYPE_NULL);
 
         mDate = new Date();
 
-        ArrayAdapter<String> adp = new ArrayAdapter<String>(this,
-            android.R.layout.simple_spinner_item,
-            mGroup.getMembers());
-        adp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mAssigneeSpinner.setAdapter(adp);
+        if (mTask != null) {
+            this.setTitle(R.string.title_activity_edit_task);
+            toolbar.setTitle(R.string.title_activity_edit_task);
+            mEditName.setText(mTask.getText());
+            mEditDeadline.setText(mDateFormat.format(mTask.getDeadline().toDate()));
+            mGroupId = mTask.getGroupId();
+        }
+
+        mGroupRef = mFirestore.collection("groups").document(mGroupId);
+
     }
 
     @Override
@@ -117,6 +129,42 @@ public class CreateTaskActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        mGroupRegistration = mGroupRef.addSnapshotListener(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (mGroupRegistration != null) {
+            mGroupRegistration.remove();
+            mGroupRegistration = null;
+        }
+    }
+
+    @Override
+    public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
+        if (e != null) {
+            Log.w(TAG, "restaurant:onEvent", e);
+            return;
+        }
+
+        onGroupLoaded(snapshot.toObject(Group.class));
+    }
+
+    private void onGroupLoaded(Group group) {
+        mGroup = group;
+        ArrayAdapter<String> adp = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item,
+                mGroup.getMembers());
+        adp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mAssigneeSpinner.setAdapter(adp);
     }
 
     @OnClick(R.id.edit_date)
@@ -166,28 +214,50 @@ public class CreateTaskActivity extends AppCompatActivity {
         } else {
             Log.d("CreateTaskActivity", "Creating new task");
             User curUser = new User(mFirebaseAuth.getCurrentUser());
-            Task task = new Task();
-            task.setText(name);
-            task.setCreator(curUser.getEmail());
-            task.setOwner(owner);
+            boolean shouldEditTask = true;
+            if (mTask == null) {
+                mTask = new Task();
+                shouldEditTask = false;
+            }
+            mTask.setText(name);
+            mTask.setCreator(curUser.getEmail());
+            mTask.setOwner(owner);
             Timestamp deadline = new Timestamp(mDate);
-            task.setDeadline(deadline);
+            mTask.setDeadline(deadline);
 
-            TaskStore.saveTask(task, owner, mGroupId).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d(TAG, "Task saved");
-                    NavUtils.navigateUpFromSameTask(CreateTaskActivity.this);
+            if (shouldEditTask) {
+                TaskStore.editTask(mTask).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Task saved");
+                        NavUtils.navigateUpFromSameTask(CreateTaskActivity.this);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Task failed to save");
+                        Snackbar.make(view, "Error saving task to server", Snackbar.LENGTH_LONG)
+                                .setAction("Error", null).show();
+                    }
+                });
+            } else {
+                TaskStore.saveTask(mTask, owner, mGroupId).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Task saved");
+                        NavUtils.navigateUpFromSameTask(CreateTaskActivity.this);
 
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.d(TAG, "Task failed to save");
-                    Snackbar.make(view, "Error saving task to server", Snackbar.LENGTH_LONG)
-                            .setAction("Error", null).show();
-                }
-            });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Task failed to save");
+                        Snackbar.make(view, "Error saving task to server", Snackbar.LENGTH_LONG)
+                                .setAction("Error", null).show();
+                    }
+                });
+            }
+
         }
     }
 }
