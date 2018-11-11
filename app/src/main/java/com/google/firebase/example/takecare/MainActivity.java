@@ -22,6 +22,7 @@ import android.widget.FrameLayout;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.actions.NoteIntents;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -118,6 +119,11 @@ public class MainActivity extends AppCompatActivity
 
         if (!shouldStartSignIn()) {
             switchToTodaysTasks();
+        }
+
+        Intent intent = getIntent();
+        if (NoteIntents.ACTION_CREATE_NOTE.equals(intent.getAction())) {
+            onCreateNote(intent);
         }
 
     }
@@ -383,6 +389,18 @@ public class MainActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(mFragmentContainer.getId(),
                 GroupListViewFragment.newInstance()).commit();
+    }
+
+    private void onCreateNote(Intent intent) {
+        String text = intent.getStringExtra("android.intent.extra.TEXT");
+        com.google.firebase.example.takecare.model.Task task = new com.google.firebase.example.takecare.model.Task();
+        String curUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+
+        task.setText(text);
+        task.setCreator(curUserEmail);
+        task.setOwner(curUserEmail);
+
+        TaskStore.saveTask(task, curUserEmail);
     }
 
 }

@@ -110,11 +110,15 @@ public class CreateTaskActivity extends AppCompatActivity
             this.setTitle(R.string.title_activity_edit_task);
             toolbar.setTitle(R.string.title_activity_edit_task);
             mEditName.setText(mTask.getText());
-            mEditDeadline.setText(mDateFormat.format(mTask.getDeadline().toDate()));
+            if (mTask.getDeadline() != null) {
+                mEditDeadline.setText(mDateFormat.format(mTask.getDeadline().toDate()));
+            }
             mGroupId = mTask.getGroupId();
         }
 
-        mGroupRef = mFirestore.collection("groups").document(mGroupId);
+        if (mGroupId != null) {
+            mGroupRef = mFirestore.collection("groups").document(mGroupId);
+        }
 
     }
 
@@ -135,7 +139,9 @@ public class CreateTaskActivity extends AppCompatActivity
     public void onStart() {
         super.onStart();
 
-        mGroupRegistration = mGroupRef.addSnapshotListener(this);
+        if (mGroupRef != null) {
+            mGroupRegistration = mGroupRef.addSnapshotListener(this);
+        }
     }
 
     @Override
@@ -208,7 +214,7 @@ public class CreateTaskActivity extends AppCompatActivity
         String name = mEditName.getText().toString();
         String date = mEditDeadline.getText().toString();
         String owner = mAssigneeSpinner.getSelectedItem().toString();
-        if (name.equals("") || date.equals("") || owner.equals("")) {
+        if (name.equals("") || owner.equals("")) {
             Snackbar.make(view, "Error: please enter valid input", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         } else {

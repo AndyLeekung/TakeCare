@@ -9,6 +9,21 @@ import com.google.firebase.firestore.WriteBatch;
 public class TaskStore {
 
     public static Task<Void> saveTask(com.google.firebase.example.takecare.model.Task task,
+                                      String email) {
+        // TODO subscribers
+
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        DocumentReference userRef = firestore.collection("users").document(email);
+        WriteBatch batch = firestore.batch();
+
+        DocumentReference taskRef = userRef.collection("tasks").document();
+        task.setTaskId(taskRef.getId());
+        batch.set(taskRef, task);
+
+        return batch.commit();
+    }
+
+    public static Task<Void> saveTask(com.google.firebase.example.takecare.model.Task task,
                                       String email, String groupId) {
         // TODO subscribers
 
@@ -31,6 +46,7 @@ public class TaskStore {
     }
 
     public static Task<Void> editTask(com.google.firebase.example.takecare.model.Task task) {
+        // TODO if you change the owner, the original task will still be on the owner
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
         WriteBatch batch = firestore.batch();
@@ -41,11 +57,14 @@ public class TaskStore {
         DocumentReference userRef = firestore.collection("users")
                 .document(task.getOwner()).collection("tasks").document(taskId);
 
-        DocumentReference groupRef = firestore.collection("groups")
-                .document(groupId).collection("tasks").document(taskId);
-
         batch.set(userRef, task);
-        batch.set(groupRef, task);
+
+        if (groupId != null) {
+            DocumentReference groupRef = firestore.collection("groups")
+                    .document(groupId).collection("tasks").document(taskId);
+
+            batch.set(groupRef, task);
+        }
 
         return batch.commit();
     }
@@ -61,11 +80,13 @@ public class TaskStore {
         DocumentReference userRef = firestore.collection("users")
                 .document(task.getOwner()).collection("tasks").document(taskId);
 
-        DocumentReference groupRef = firestore.collection("groups")
-                .document(groupId).collection("tasks").document(taskId);
-
         batch.delete(userRef);
-        batch.delete(groupRef);
+
+        if (groupId != null) {
+            DocumentReference groupRef = firestore.collection("groups")
+                    .document(groupId).collection("tasks").document(taskId);
+            batch.delete(groupRef);
+        }
 
         return batch.commit();
     }
