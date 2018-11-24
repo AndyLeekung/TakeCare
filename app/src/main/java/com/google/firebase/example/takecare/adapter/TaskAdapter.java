@@ -20,6 +20,7 @@ import com.google.firebase.firestore.Query;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,6 +63,9 @@ public class TaskAdapter extends FirestoreAdapter<TaskAdapter.ViewHolder> {
         @BindView(R.id.content_text)
         TextView mTaskView;
 
+        @BindView(R.id.deadline_text)
+        TextView mDeadlineView;
+
         @BindView(R.id.btn_delete_task)
         ImageButton mBtnDelete;
 
@@ -70,6 +74,9 @@ public class TaskAdapter extends FirestoreAdapter<TaskAdapter.ViewHolder> {
         DocumentSnapshot mSnapshot;
 
         OnTaskSelectedListener mListener;
+
+        private SimpleDateFormat mDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.US);
+
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -84,6 +91,12 @@ public class TaskAdapter extends FirestoreAdapter<TaskAdapter.ViewHolder> {
             mSnapshot = snapshot;
 
             mTaskView.setText(task.getText());
+            if (task.getDeadline() != null) {
+                mDeadlineView.setVisibility(View.VISIBLE);
+                mDeadlineView.setText(mDateFormat.format(task.getDeadline().toDate()));
+            } else {
+                mDeadlineView.setVisibility(View.INVISIBLE);
+            }
 
             mListener = listener;
             mCheckbox.setChecked(task.isComplete());

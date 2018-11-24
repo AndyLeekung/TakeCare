@@ -6,12 +6,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.example.takecare.R;
 import com.google.firebase.example.takecare.TaskListFragment;
 import com.google.firebase.example.takecare.UserListFragment;
 import com.google.firebase.example.takecare.UserListFragment.OnUserSelectedListener;
 import com.google.firebase.example.takecare.dummy.DummyContent.DummyItem;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.util.List;
@@ -46,7 +49,17 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     public void onBindViewHolder(final UserAdapter.ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
 //        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position));
+        String email = mValues.get(position);
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        DocumentReference docRef = firestore.collection("users").document(email);
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot snapshot) {
+                String displayName = snapshot.get("name").toString();
+                holder.mContentView.setText(displayName);
+
+            }
+        });
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
