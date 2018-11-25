@@ -1,43 +1,44 @@
 package com.google.firebase.example.takecare.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.firebase.Timestamp;
-import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Date;
-import java.util.List;
+public class Task implements Parcelable {
 
-public class Task {
-
-    private FirebaseUser creator;
-    private FirebaseUser owner;
-    private List<FirebaseUser> subscribers;
+    private String taskId;
+    private String creator;
+    private String owner;
     private String text;
     private Timestamp deadline;
+    private boolean isComplete;
+    private String groupId;
 
     public Task() {}
 
-    public FirebaseUser getCreator() {
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
+    public String getCreator() {
         return creator;
     }
 
-    public void setCreator(FirebaseUser creator) {
+    public void setCreator(String creator) {
         this.creator = creator;
     }
 
-    public FirebaseUser getOwner() {
+    public String getOwner() {
         return owner;
     }
 
-    public void setOwner(FirebaseUser owner) {
+    public void setOwner(String owner) {
         this.owner = owner;
-    }
-
-    public List<FirebaseUser> getSubscribers() {
-        return subscribers;
-    }
-
-    public void setSubscribers(List<FirebaseUser> subscribers) {
-        this.subscribers = subscribers;
     }
 
     public String getText() {
@@ -55,4 +56,58 @@ public class Task {
     public void setDeadline(Timestamp deadline) {
         this.deadline = deadline;
     }
+
+    public boolean isComplete() {
+        return isComplete;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public void setComplete(boolean complete) {
+        isComplete = complete;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.taskId);
+        dest.writeString(this.creator);
+        dest.writeString(this.owner);
+        dest.writeString(this.text);
+        dest.writeParcelable(this.deadline, flags);
+        dest.writeByte(this.isComplete ? (byte) 1 : (byte) 0);
+        dest.writeString(this.groupId);
+    }
+
+    protected Task(Parcel in) {
+        this.taskId = in.readString();
+        this.creator = in.readString();
+        this.owner = in.readString();
+        this.text = in.readString();
+        this.deadline = in.readParcelable(Timestamp.class.getClassLoader());
+        this.isComplete = in.readByte() != 0;
+        this.groupId = in.readString();
+    }
+
+    public static final Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
+        @Override
+        public Task createFromParcel(Parcel source) {
+            return new Task(source);
+        }
+
+        @Override
+        public Task[] newArray(int size) {
+            return new Task[size];
+        }
+    };
 }

@@ -143,4 +143,15 @@
     <string name="title_activity_todays_tasks">TodaysTasksActivity</string>
     <string name="title_activity_group">GroupActivity</string>
     <string name="title_activity_group_detail">GroupDetailActivity</string>
+    <string name="title_activity_create_task">Create Task</string>
+    <string name="title_activity_edit_task">Edit Task</string>
+    <string name="title_activity_main_nav">MainNavActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_groups">Groups</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="add_member">Add Member</string>
+    <string name="add">Add</string>
+    <string name="change_group_name">Change Group Name</string>
+    <string name="upcoming_tasks">Upcoming Tasks</string>
+    <string name="delete_group">Delete Group</string>
 </resources>

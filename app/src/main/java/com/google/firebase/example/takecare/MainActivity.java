@@ -4,7 +4,12 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.design.internal.BottomNavigationMenu;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,15 +17,30 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.actions.NoteIntents;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.example.takecare.adapter.RestaurantAdapter;
+import com.google.firebase.example.takecare.model.User;
+import com.google.firebase.example.takecare.store.TaskStore;
 import com.google.firebase.example.takecare.viewmodel.MainActivityViewModel;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.Transaction;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.Collections;
 
@@ -28,25 +48,26 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements TaskListFragment.OnTaskSelectedListener,
+        GroupListFragment.OnGroupSelectedListener{
 
     private static final String TAG = "MainActivity";
 
     private static final int RC_SIGN_IN = 9001;
+    private static final int EDIT_TASK_REQUEST_CODE = 9002;
 
     private static final int LIMIT = 50;
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @BindView(R.id.btn_todays_tasks)
-    Button mTodaysTasksBtn;
+    @BindView(R.id.navigation)
+    BottomNavigationView mBottomNav;
 
-    @BindView(R.id.btn_subscribed_tasks)
-    Button mSubscribedTasksBtn;
+    @BindView(R.id.fragment_container)
+    FrameLayout mFragmentContainer;
 
-    @BindView(R.id.btn_groups)
-    Button mGroupsBtn;
 
     private FirebaseFirestore mFirestore;
     private Query mQuery;
@@ -56,12 +77,36 @@ public class MainActivity extends AppCompatActivity {
 
     private MainActivityViewModel mViewModel;
 
+    private BottomNavigationView.OnNavigationItemSelectedListener mNavigationListener =
+            new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    switch (item.getItemId()) {
+                        case  R.id.navigation_home:
+                            Log.d(TAG, "Navigation Home");
+                            switchToTodaysTasks();
+                            return true;
+                        case R.id.navigation_groups:
+                            Log.d(TAG, "Navigation Groups");
+                            switchToGroups();
+                            return true;
+//                        case R.id.navigation_notifications:
+//                            Log.d(TAG, "Navigation Notifications");
+//
+//                            return true;
+                    }
+                    return false;
+                }
+            };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
+
+        mBottomNav.setOnNavigationItemSelectedListener(mNavigationListener);
 
         // View model
         mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
@@ -71,6 +116,15 @@ public class MainActivity extends AppCompatActivity {
 
         // Firestore
         mFirestore = FirebaseFirestore.getInstance();
+
+        if (!shouldStartSignIn()) {
+            switchToTodaysTasks();
+        }
+
+        Intent intent = getIntent();
+        if (NoteIntents.ACTION_CREATE_NOTE.equals(intent.getAction())) {
+            onCreateNote(intent);
+        }
 
     }
 
@@ -132,28 +186,80 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     showSignInErrorDialog(R.string.message_unknown);
                 }
+            } else {
+                // Store user in database
+                final FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (fbUser != null) {
+                    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                        @Override
+                        public void onSuccess(InstanceIdResult instanceIdResult) {
+                            String token = instanceIdResult.getToken();
+                            final User user = new User(fbUser, token);
+                            addUser(user).addOnSuccessListener(MainActivity.this, new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d(TAG, user.getEmail() + " added to Firestore");
+                                }
+                            });
+                        }
+                    });
+
+                }
             }
         }
     }
 
-    @OnClick(R.id.btn_todays_tasks)
-    public void onTodaysTasksClicked() {
-        // TODO
-        Log.d(TAG, "todays tasks clicked");
-        Intent intent = new Intent(this, TodaysTasksActivity.class);
-        startActivity(intent);
+    @Override
+    public void onTaskClicked(com.google.firebase.example.takecare.model.Task task) {
+        Intent intent = new Intent(this, CreateTaskActivity.class);
+        // need to pass along the group ID for task creation
+        intent.putExtra(CreateTaskActivity.TASK_KEY, task);
+        startActivityForResult(intent, EDIT_TASK_REQUEST_CODE);
     }
 
-    @OnClick(R.id.btn_subscribed_tasks)
-    public void onSubscribedTasksClicked() {
+    @Override
+    public void onTaskCheckBoxChange(com.google.firebase.example.takecare.model.Task task, boolean checked) {
         // TODO
-
+        Log.d(TAG, "Task checkbox: " + checked);
+        task.setComplete(checked);
+        TaskStore.editTask(task).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Task edited");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Task failed to edit");
+            }
+        });
     }
 
-    @OnClick(R.id.btn_groups)
-    public void onGroupsClicked() {
+    @Override
+    public void onTaskDeleteClicked(com.google.firebase.example.takecare.model.Task task) {
         // TODO
-        Intent intent = new Intent(this, GroupListActivity.class);
+        Log.d(TAG, "Task delete click");
+        TaskStore.deleteTask(task).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Task deleted");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Task failed to delete");
+            }
+        });
+    }
+
+    @Override
+    public void onGroupSelected(DocumentSnapshot group) {
+        // TODO go to group activity
+        String groupId = group.getId();
+        Log.d(TAG, "Group ID: " + groupId + " clicked");
+        Intent intent = new Intent(this, GroupDetailActivity.class);
+        intent.putExtra(GroupDetailActivity.GROUP_ID_KEY, groupId);
+
         startActivity(intent);
     }
 
@@ -171,6 +277,20 @@ public class MainActivity extends AppCompatActivity {
 
         startActivityForResult(intent, RC_SIGN_IN);
         mViewModel.setIsSigningIn(true);
+        mViewModel.setIsSigningIn(true);
+    }
+
+    private Task<Void> addUser(final User user) {
+        final DocumentReference userRef = mFirestore.collection("users")
+                .document(user.getEmail());
+        return mFirestore.runTransaction(new Transaction.Function<Void>() {
+            @Nullable
+            @Override
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                transaction.set(userRef, user);
+                return null;
+            }
+        });
     }
 
 //    private void onAddItemsClicked() {
@@ -254,4 +374,33 @@ public class MainActivity extends AppCompatActivity {
 
         dialog.show();
     }
+
+    private void switchToTodaysTasks() {
+        mToolbar.setTitle(R.string.app_name);
+        String curUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(mFragmentContainer.getId(),
+                UserTasksFragment.newInstance(curUserEmail))
+                .commit();
+    }
+
+    private void switchToGroups() {
+        mToolbar.setTitle(R.string.groups);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(mFragmentContainer.getId(),
+                GroupListViewFragment.newInstance()).commit();
+    }
+
+    private void onCreateNote(Intent intent) {
+        String text = intent.getStringExtra("android.intent.extra.TEXT");
+        com.google.firebase.example.takecare.model.Task task = new com.google.firebase.example.takecare.model.Task();
+        String curUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+
+        task.setText(text);
+        task.setCreator(curUserEmail);
+        task.setOwner(curUserEmail);
+
+        TaskStore.saveTask(task, curUserEmail);
+    }
+
 }

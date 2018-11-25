@@ -1,11 +1,14 @@
 package com.google.firebase.example.takecare.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Group {
+public class Group implements Parcelable {
 
     private String name;
     private List<String> members;
@@ -23,6 +26,23 @@ public class Group {
         this.name = name;
     }
 
+    private Group(Parcel in) {
+        name = in.readString();
+        members = in.createStringArrayList();
+    }
+
+    public static final Creator<Group> CREATOR = new Creator<Group>() {
+        @Override
+        public Group createFromParcel(Parcel in) {
+            return new Group(in);
+        }
+
+        @Override
+        public Group[] newArray(int size) {
+            return new Group[size];
+        }
+    };
+
     public String getName() {
         return name;
     }
@@ -37,5 +57,17 @@ public class Group {
 
     public void setMembers(List<String> members) {
         this.members = members;
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(name);
+        parcel.writeStringList(members);
     }
 }

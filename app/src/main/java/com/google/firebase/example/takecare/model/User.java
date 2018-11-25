@@ -8,12 +8,18 @@ import java.util.List;
 public class User {
     private String name;
     private String email;
-    private List<Task> tasks;
+    private String token;
+
+    public User() {}
 
     public User(FirebaseUser user) {
         this.name = user.getDisplayName();
         this.email = user.getEmail();
-        this.tasks = new ArrayList<>();
+    }
+
+    public User(FirebaseUser user, String token) {
+        this(user);
+        this.token = token;
     }
 
     public String getName() {
@@ -32,11 +38,11 @@ public class User {
         this.email = email;
     }
 
-    public List<Task> getTasks() {
-        return tasks;
+    public String getToken() {
+        return token;
     }
 
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
+    public void setToken(String token) {
+        this.token = token;
     }
 }

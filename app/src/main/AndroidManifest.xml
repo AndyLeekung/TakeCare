@@ -17,25 +17,43 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.android.gms.actions.CREATE_NOTE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.VOICE" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".RestaurantDetailActivity"
             android:theme="@style/AppTheme.Activity" />
-        <activity
-            android:name=".TodaysTasksActivity"
-            android:label="@string/todays_tasks"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".GroupListActivity"
-            android:label="@string/title_activity_group"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme" />
+        <!--<activity-->
+            <!--android:name=".GroupListActivity"-->
+            <!--android:label="@string/title_activity_group"-->
+            <!--android:parentActivityName=".MainActivity"-->
+            <!--android:theme="@style/AppTheme" />-->
         <activity
             android:name=".GroupDetailActivity"
             android:label="@string/title_activity_group_detail"
-            android:theme="@style/AppTheme"
-            android:parentActivityName=".GroupListActivity"/>
+            android:launchMode="singleTop"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme" />
+
+        <service android:name=".service.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".CreateTaskActivity"
+            android:label="@string/title_activity_create_task"
+            android:parentActivityName=".GroupDetailActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.google.firebase.example.takecare.GroupDetailActivity" />
+        </activity>
     </application>
 
 </manifest>

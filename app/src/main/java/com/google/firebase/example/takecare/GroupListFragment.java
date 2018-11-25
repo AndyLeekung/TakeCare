@@ -29,11 +29,6 @@ import butterknife.ButterKnife;
  * interface.
  */
 public class GroupListFragment extends Fragment {
-
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
-    private int mColumnCount = 1;
     private OnGroupSelectedListener mListener;
 
     private FirebaseFirestore mFirestore;
@@ -54,7 +49,6 @@ public class GroupListFragment extends Fragment {
     public static GroupListFragment newInstance(int columnCount) {
         GroupListFragment fragment = new GroupListFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
         return fragment;
     }
@@ -62,10 +56,6 @@ public class GroupListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
     }
 
     @Override
