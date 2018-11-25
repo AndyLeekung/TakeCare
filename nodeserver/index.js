@@ -11,7 +11,7 @@ admin.initializeApp({
 var db = admin.firestore();
 
 // Set up the sender with your GCM/FCM API key (declare this once for multiple messages)
-var sender = new gcm.Sender('AIzaSyBmGC-rZ5FrYoUciEinoURSKRi6GUz_HJ4');
+var sender = new gcm.Sender('enter key here');
 
 
 var user_observer = db.collection('users').onSnapshot(querySnapshot => {
